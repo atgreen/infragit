@@ -1,0 +1,36 @@
+---
+- name: Gather libvirt hosts
+  hosts: libvirt_discover_hosts
+  gather_facts: true
+  roles:
+    - libvirt
+
+- name: Gather nmap hosts
+  hosts: nmap_discover_hosts
+  gather_facts: true
+  roles:
+    - nmap
+
+- name: Gather Satellite hosts
+  hosts: satellite_discover_hosts
+  gather_facts: true
+  roles:
+    - satellite
+
+- name: Gather VMware vcenter hosts
+  hosts: vcenter_discover_hosts
+  gather_facts: true
+  roles:
+    - vcenter
+
+- name: Gather Digital Ocean hosts
+  hosts: digitalocean_discover_hosts
+  gather_facts: true
+  roles:
+    - digitalocean
+
+- name: Gather vultr hosts
+  hosts: vultr_discover_hosts
+  gather_facts: true
+  roles:
+    - vultr

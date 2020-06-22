@@ -1,0 +1,21 @@
+---
+- name: Create temporary file
+  delegate_to: localhost
+  tempfile:
+    state: file
+    suffix: temp
+  register: nmap_file
+
+- name: Run nmap
+  command: "nmap -oX - -R -p 22-443 -sV {{ nmap_scan_network_range }}"
+  register: nmap_output
+  
+- name: copy the output to a local file
+  copy:
+    content: "{{ nmap_output.stdout }}"
+    dest: "{{ nmap_file.path }}"
+  delegate_to: localhost
+
+- name: Tell infragit about results
+  delegate_to: localhost
+  debug: msg=":>:> nmap {{ nmap_file.path }} <:<:"

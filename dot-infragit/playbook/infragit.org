@@ -1,0 +1,25 @@
+* Workflow
+
+Top level directory includes...
+ hosts
+ networks
+
+The hosts directory contains a list of unique hosts across the entire
+infrastructure.
+
+Under the networks directory, create a directory hierarchy that maps
+to your network infrastructure.  Some directories will contain other
+files and directories containing Host information is generated through
+a discovery process.  Each one of these directories contains a file
+called "_root".  This is an Ansible inventory file identifying hosts
+from which to run discovery.  The hosts must be members of one of
+several types of groups, corresponding to infrastructure types.  These
+include the following:
+
+ - libvirt for libvirtd hosts
+ - nmap for discovery using nmap scanning
+ - satellite for inspecting satellite inventories
+
+Network interfaces need to be mapped to networks.
+
+eg.  br0 > labdroid/home

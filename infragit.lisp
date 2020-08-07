@@ -7,6 +7,8 @@
 
 (log:config :debug)
 
+(defvar *verbose* nil)
+
 (defvar *dot-infragit*
   (with-open-file (stream "dot-infragit.tar.gz" :element-type '(unsigned-byte 8))
     (let ((seq (make-array (file-length stream) :element-type '(unsigned-byte 8))))
@@ -18,9 +20,13 @@
    :description "print this help text"
    :short #\h
    :long "help")
+  (:name :verbos
+   :description "verbose"
+   :short #\v
+   :long "help")
   (:name :version
    :description "print version information"
-   :short #\v
+   :short #\V
    :long "version"))
 
 (defun unknown-option (condition)
@@ -167,7 +173,8 @@ Distributed under the terms of MIT License"
 		   (process-scan-output
 		    root-dir
 		    (inferior-shell:run/ss
-		     (format nil "ansible-playbook -i ~A .infragit/playbook/infragit-discover.yaml" filename)))))
+		     (format nil "ansible-playbook ~A -i ~A .infragit/playbook/infragit-discover.yaml"
+			     (if *verbose* "-vvvv" "") filename)))))
 	 :follow-symlinks nil
 	 :test (lambda (filename)
 		 (string= "_root" (file-namestring filename)))))))
@@ -184,11 +191,13 @@ Distributed under the terms of MIT License"
 						 (format t "fatal: cannot parse ~s as argument of ~s~%"
 							 (opts:raw-arg condition)
 							 (opts:option condition))))
-		       (when-option (options :help)
-				    (usage))
-		       (if (not (eq 1 (length free-args)))
-			   (usage)
-			 (alexandria:switch ((car free-args) :test #'equal)
-					    ("init"      (infragit-init))
-					    ("scan"      (infragit-scan))
-					    (t (log:error "Unrecognized command ~A" (car free-args)))))))
+    (when-option (options :help)
+		 (usage))
+    (when-option (options :verbose)
+		 (setf *verbose* t))
+    (if (not (eq 1 (length free-args)))
+	(usage)
+	(alexandria:switch ((car free-args) :test #'equal)
+			   ("init"      (infragit-init))
+			   ("scan"      (infragit-scan))
+			   (t (log:error "Unrecognized command ~A" (car free-args)))))))
